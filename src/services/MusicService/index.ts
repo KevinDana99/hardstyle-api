@@ -1,5 +1,5 @@
 import ScrapingService from "../ScrapingService";
-import type { ResultsListType } from "../ScrapingService/download";
+import type { ResultsListType } from "./types";
 
 class MusicService {
   music: string[];
@@ -16,14 +16,10 @@ class MusicService {
     this.results = results;
     return results;
   }
-  async download(url: string) {
-    const results = await ScrapingService.download(url);
+  async download(artist: string, title: string) {
+    const results = await ScrapingService.download(artist, title);
     return results;
   }
-  getOne() {}
-  filterByArtist() {}
-  filterByGender() {}
-  filterSort() {}
 }
 
 export default MusicService;

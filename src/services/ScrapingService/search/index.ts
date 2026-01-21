@@ -1,13 +1,6 @@
 import { chromium } from "playwright";
-export type ResultsListType = {
-  id: string | null;
-  title: string | null;
-  artist: string | null;
-  label: string | null;
-  image: string | null;
-  description: string | null;
-  trackUrl: string | null;
-}[];
+import type { ResultsListType } from "../../MusicService/types";
+
 type QueryConfigType = {
   limit: number;
 };
