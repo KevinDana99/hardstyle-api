@@ -1,55 +1,54 @@
-import { chromium } from "playwright";
-export type ResultsListType = {
-  id: string | null;
-  title: string | null;
-  artist: string | null;
-  label: string | null;
-  image: string | null;
-  description: string | null;
-  trackUrl: string | null;
-}[];
+import yts from "yt-search";
+import ytdl from "ytdl-core-muxer";
 
-const downloadService = async (url: string) => {
-  const browser = await chromium.launch({ headless: true });
-  // Es vital usar un contexto con un User-Agent real
-  const context = await browser.newContext({
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-  });
-  const page = await context.newPage();
-
+export const downloadService = async (
+  artist: string,
+  title: string,
+): Promise<Buffer | null> => {
   try {
-    await page.goto(url, { waitUntil: "networkidle" });
-    console.log("Paso 1: Página cargada y red inactiva");
+    const searchQuery = `${artist} - ${title} Hardstyle Official`;
+    console.log(`🔍 Buscando en YT: ${searchQuery}`);
 
-    // 1. Preparamos una "trampa" para capturar la petición del audio
-    // Escuchamos todas las peticiones que salgan de la página
-    const audioPromise = page.waitForResponse(
-      (response) =>
-        response.url().includes("/track_preview/") && response.status() === 200
-    );
+    const r = await yts(searchQuery);
+    const video = r.videos[0];
 
-    // 2. Intentamos disparar el play de varias formas
-    const playBtn = page.locator("span.playButton").first();
+    if (!video) {
+      console.error("❌ Video no encontrado");
+      return null;
+    }
 
-    // Aseguramos que el botón esté en pantalla antes de cliquear
-    await playBtn.scrollIntoViewIfNeeded();
-    await playBtn.click({ force: true });
+    console.log(`🎬 Procesando stream de: ${video.url}`);
 
-    console.log("Click realizado, esperando respuesta de red...");
+    // ytdl-core-muxer nos devuelve un objeto con el stream de audio
+    const { stream } = await ytdl(video.url, {
+      filter: "audioonly",
+      highWaterMark: 1 << 25, // Buffer de 32MB para evitar cortes
+    });
 
-    // 3. Esperamos a que la "trampa" capture la URL
-    const response = await audioPromise;
-    const finalUrl = response.url();
+    const chunks: Uint8Array[] = [];
 
-    console.log("Paso 2: URL capturada de la red ->", finalUrl);
-    return finalUrl;
+    return new Promise((resolve, reject) => {
+      stream.on("data", (chunk) => {
+        chunks.push(chunk);
+      });
+
+      stream.on("end", () => {
+        const audioBuffer = Buffer.concat(chunks);
+        console.log(
+          `✅ Audio listo: ${(audioBuffer.length / 1024 / 1024).toFixed(2)} MB`,
+        );
+        resolve(audioBuffer);
+      });
+
+      stream.on("error", (err) => {
+        console.error("❌ Error en el stream:", err.message);
+        reject(null);
+      });
+    });
   } catch (error) {
-    await page.screenshot({ path: "debug-red.png" });
-    console.error("Error en downloadService:", error.message);
+    console.error("❌ Error en downloadService:", error.message);
     return null;
-  } finally {
-    await browser.close();
   }
 };
+
 export default downloadService;

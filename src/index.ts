@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import { config } from "dotenv";
 import MusicService from "./services/MusicService";
+import type { DownloadRequestParamsType } from "./services/MusicService/types";
 config();
 
 const server = express();
@@ -15,10 +16,18 @@ server.get("/api/music/search", async (req: Request, res: Response) => {
   res.json(searchResults);
 });
 server.get("/api/music/download", async (req: Request, res: Response) => {
-  const url = req.query.url as string;
+  const { artist, title } = req.query as DownloadRequestParamsType;
   const musicService = new MusicService();
-  const preview = await musicService.download(url);
-  res.json({ preview_url: preview });
+  try {
+    if (artist && title) {
+      const preview = await musicService.download(artist, title);
+      res.json({ preview_url: preview });
+    } else {
+      throw Error("The artist or title is empty");
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
 });
 
 server.listen(PORT, () => {
