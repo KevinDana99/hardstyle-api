@@ -29,9 +29,11 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
       return res.status(404).send("No se pudo obtener el audio");
     }
 
-    // 2. Configuramos headers de streaming
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Transfer-Encoding", "chunked");
+    res.setHeader("Content-Type", "audio/mpeg"); // Indica que es un archivo MP3
+    res.setHeader("Transfer-Encoding", "chunked"); // Avisa que el archivo llegará por partes
+    res.setHeader("Connection", "keep-alive"); // Mantiene el túnel abierto mientras fluyen los datos
+    res.setHeader("Cache-Control", "no-cache"); // Evita que se guarde un archivo incompleto en caché
+    res.setHeader("Access-Control-Allow-Origin", "*");
 
     const reader = stream.getReader();
 
@@ -39,11 +41,12 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
     try {
       while (true) {
         const { done, value } = await reader.read();
+        console.log({ value, done });
         if (done) break;
 
         // Verificamos que 'value' contenga datos antes de escribir
         if (value) {
-          res.write(value);
+          res.write(Buffer.from(value));
         }
       }
     } catch (streamError) {
