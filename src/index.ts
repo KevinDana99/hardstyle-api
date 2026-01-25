@@ -17,12 +17,16 @@ server.get("/api/music/search", async (req: Request, res: Response) => {
 });
 server.get("/api/music/download", async (req: Request, res: Response) => {
   try {
-    const { artist, title } = req.query;
+    const { artist, title, url } = req.query;
     if (!artist || !title) {
       return res.status(400).send("Faltan parámetros artist o title");
     }
 
-    const stream = await downloadService(artist as string, title as string);
+    const stream = await downloadService(
+      artist as string,
+      title as string,
+      (url as string) ?? null,
+    );
 
     if (!stream) {
       console.error("❌ No se pudo obtener el stream de downloadService");
