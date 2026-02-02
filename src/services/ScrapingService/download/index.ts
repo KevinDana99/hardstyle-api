@@ -1,4 +1,5 @@
 import yts from "yt-search";
+import config from "../../../config";
 
 export const downloadService = async (artist: string, title: string) => {
   try {
@@ -11,21 +12,21 @@ export const downloadService = async (artist: string, title: string) => {
     const options = {
       method: "GET",
       headers: {
-        "x-rapidapi-key": "55d9220dcemsh5e5b0ce8922d1c7p1f0571jsne13ac3ab4b0c",
-        "x-rapidapi-host": "yt-api.p.rapidapi.com",
+        "x-rapidapi-key": config.API_SECRET_KEY,
+        "x-rapidapi-host": config.API_HOST,
       },
     };
 
     const response = await fetch(
       `https://yt-api.p.rapidapi.com/dl?id=${video.videoId}`,
-      options
+      options,
     );
 
     const data = (await response.json()) as any;
 
     // Buscamos dentro de adaptiveFormats el itag 140 (Audio MP4) o el 251 (Audio Webm)
     const audioFormat = data.adaptiveFormats?.find(
-      (f: any) => f.itag === 140 || f.itag === 251
+      (f: any) => f.itag === 140 || f.itag === 251,
     );
 
     if (audioFormat && audioFormat.url) {
@@ -37,7 +38,7 @@ export const downloadService = async (artist: string, title: string) => {
       return audioRes.body;
     } else {
       console.error(
-        "❌ No se encontró un formato de audio compatible en la respuesta."
+        "❌ No se encontró un formato de audio compatible en la respuesta.",
       );
       return null;
     }
