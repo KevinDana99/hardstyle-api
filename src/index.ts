@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import MusicService from "./services/MusicService";
 import type { DownloadRequestParamsType } from "./services/MusicService/types";
 import downloadService from "./services/ScrapingService/download";
+import { Readable } from "stream";
 config();
 
 const server = express();
@@ -30,31 +31,28 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
     }
 
     res.setHeader("Content-Type", "audio/mpeg"); // Indica que es un archivo MP3
-    res.setHeader("Transfer-Encoding", "chunked"); // Avisa que el archivo llegará por partes
     res.setHeader("Connection", "keep-alive"); // Mantiene el túnel abierto mientras fluyen los datos
     res.setHeader("Cache-Control", "no-cache"); // Evita que se guarde un archivo incompleto en caché
     res.setHeader("Access-Control-Allow-Origin", "*");
+    res.writeHead(200, {
+      "Duration-Track": stream.meta_data.duration.seconds,
+      "Content-Length": stream.size,
+      "Content-Type": "audio/mpeg",
+      "Accept-Ranges": "bytes", // Permite que Telegram salte a cualquier parte del audio
+      "Access-Control-Allow-Origin": "*",
+    });
+    const nodeStream = Readable.fromWeb(stream.audio_track as any);
 
-    const reader = stream.getReader();
+    // LOG DE DEBUG
+    nodeStream.on("data", (chunk) => {
+      console.log(`✅ Recibiendo datos: ${chunk.length} bytes`);
+    });
 
-    // 3. Bucle de lectura con manejo de errores
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        console.log({ value, done });
-        if (done) break;
+    nodeStream.on("end", () => {
+      console.log("🏁 El stream de origen terminó");
+    });
 
-        // Verificamos que 'value' contenga datos antes de escribir
-        if (value) {
-          res.write(Buffer.from(value));
-        }
-      }
-    } catch (streamError) {
-      console.error("❌ Error durante la lectura del stream:", streamError);
-    } finally {
-      res.end(); // Cerramos la conexión siempre
-      reader.releaseLock(); // Liberamos el stream
-    }
+    nodeStream.pipe(res);
   } catch (globalError) {
     console.error("❌ Error crítico en el endpoint:", globalError);
     if (!res.headersSent) {
@@ -65,3 +63,4 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
 server.listen(PORT, () => {
   console.log(`server running in port ${PORT}`);
 });
+/*;*/
