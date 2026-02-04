@@ -1,9 +1,7 @@
 import { chromium } from "playwright";
 import type { ResultsListType } from "../../MusicService/types";
+import type { QueryConfigType } from "./types";
 
-type QueryConfigType = {
-  limit: number;
-};
 const LIMIT_RESULTS = 5;
 const searchService = async (query: string, config?: QueryConfigType) => {
   const results: ResultsListType = [];

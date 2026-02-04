@@ -1,30 +1,32 @@
-import yts from "yt-search";
+import yts, { type OptionsWithSearch } from "yt-search";
 import config from "../../../config";
+import type { DonwloadYtRequest } from "./types";
+import { config as configDotenv } from "dotenv";
 
 export const downloadService = async (artist: string, title: string) => {
+  configDotenv();
   try {
     const search = await yts(`${title} ${artist} Hardstyle`);
     const video = search.videos[0];
     if (!video) return null;
-
-    console.log(`🎬 Video encontrado: ${video.title}`);
-    console.log({ video });
-    const options = {
+    const options: DonwloadYtRequest = {
       method: "GET",
       headers: {
-        "x-rapidapi-key": config.API_SECRET_KEY,
-        "x-rapidapi-host": config.API_HOST,
+        "x-rapidapi-key": config.API_SECRET_KEY ?? "",
+        "x-rapidapi-host": config.API_HOST ?? "",
       },
     };
-
+    console.log({ options, config });
     const response = await fetch(
-      `https://yt-api.p.rapidapi.com/dl?id=${video.videoId}`,
+      `https://${config.API_HOST}/dl?id=${video.videoId}`,
       options,
     );
 
     const data = (await response.json()) as any;
 
-    // Buscamos dentro de adaptiveFormats el itag 140 (Audio MP4) o el 251 (Audio Webm)
+    console.log(`🎬 Video encontrado: ${video.title}`);
+    console.log({ video });
+
     const audioFormat = data.adaptiveFormats?.find(
       (f: any) => f.itag === 140 || f.itag === 251,
     );
@@ -32,7 +34,6 @@ export const downloadService = async (artist: string, title: string) => {
     if (audioFormat && audioFormat.url) {
       console.log("✅ Link directo de audio extraído con éxito");
 
-      // Pedimos el stream del archivo
       const audioRes = await fetch(audioFormat.url, {
         headers: {
           redirect: "follow",
@@ -44,8 +45,8 @@ export const downloadService = async (artist: string, title: string) => {
           Connection: "keep-alive",
         },
       });
-      const size = audioRes.headers.get("Content-Length") as number;
-      console.log({ audioRes });
+      const size = audioRes.headers.get("Content-Length");
+
       return {
         audio_track: audioRes.body,
         meta_data: video,
