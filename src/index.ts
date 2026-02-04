@@ -55,9 +55,6 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
   }
 });
 
-if (process.env.NODE_ENV !== "production") {
-  server.listen(PORT, () => {
-    console.log(`server running in port ${PORT}`);
-  });
-}
-export default server;
+server.listen(PORT, () => {
+  console.log(`server running in port ${PORT}`);
+});
