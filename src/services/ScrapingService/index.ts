@@ -1,5 +1,5 @@
-import downloadService from "./download";
-import searchService from "./search";
+import downloadService from "./download/index.js";
+import searchService from "./search/index.js";
 
 const ScrapingService = {
   search: searchService,

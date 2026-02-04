@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express, { type Request, type Response } from "express";
 import { config as dotEnvConfig } from "dotenv";
-import MusicService from "./services/MusicService";
-import downloadService from "./services/ScrapingService/download";
+import MusicService from "./services/MusicService/index.js";
+import downloadService from "./services/ScrapingService/download/index.js";
 import { Readable } from "stream";
-import setHeaders from "./utils";
+import setHeaders from "./utils/index.js";
 dotEnvConfig();
 const server = express();
 const PORT = process.env.PORT || 3001;
@@ -47,6 +47,10 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
     }
   }
 });
-server.listen(PORT, () => {
-  console.log(`server running in port ${PORT}`);
-});
+
+if (process.env.NODE_ENV !== "production") {
+  server.listen(PORT, () => {
+    console.log(`server running in port ${PORT}`);
+  });
+}
+export default server;

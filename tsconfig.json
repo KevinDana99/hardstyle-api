@@ -3,14 +3,14 @@
     // Environment setup & latest features
     "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "Preserve",
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
     "rootDir": "./src", // Donde está tu código (Input)
     "outDir": "./api",
     // Bundler mode
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     //"allowImportingTsExtensions": false,
     "verbatimModuleSyntax": true,
     "noEmit": false,

@@ -1,6 +1,6 @@
 import yts, { type OptionsWithSearch } from "yt-search";
-import config from "../../../config";
-import type { DonwloadYtRequest } from "./types";
+import config from "../../../config/index.js";
+import type { DonwloadYtRequest } from "./types.js";
 import { config as configDotenv } from "dotenv";
 
 export const downloadService = async (artist: string, title: string) => {

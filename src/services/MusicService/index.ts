@@ -1,4 +1,4 @@
-import ScrapingService from "../ScrapingService";
+import ScrapingService from "../ScrapingService/index.js";
 
 const search = async (query: string) => {
   const results = await ScrapingService.search(query);
