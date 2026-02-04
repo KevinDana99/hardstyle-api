@@ -7,7 +7,7 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "rootDir": "./src", // Donde está tu código (Input)
-    "outDir": "./api",
+    "outDir": "./dist",
     // Bundler mode
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
