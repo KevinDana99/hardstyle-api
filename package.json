@@ -13,9 +13,9 @@
   },
   "private": true,
   "scripts": {
-    "start": "node src/index.ts",
+    "start": "node api/index.ts",
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "npx tsc",
     "lint": "ts-standard",
     "lint:fix": "ts-standard --fix"
   },
@@ -30,6 +30,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "playwright": "^1.57.0",
+    "typescript": "^5.9.3",
     "youtube-dl-exec": "^3.0.29",
     "youtubei.js": "^16.0.1",
     "yt-search": "^2.13.1"
