@@ -10,6 +10,9 @@ const server = express();
 const PORT = process.env.PORT || 3001;
 server.set("json spaces", 2);
 
+server.get("/", async (req: Request, res: Response) => {
+  return res.json({status: 200, message:"API WORKING"})
+});
 server.get("/api/music/search", async (req: Request, res: Response) => {
   const query = req.query.q as string;
   const searchResults = await MusicService.search(query);
