@@ -14,7 +14,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
-    "build": "yarn && tsc && npx playwright install chromium",
+    "build": "tsc",
     "lint": "ts-standard",
     "lint:fix": "ts-standard --fix"
   },

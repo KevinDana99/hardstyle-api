@@ -8,7 +8,8 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # 4. Instalamos todo (Yarn ya viene en esta imagen)
-RUN yarn install
+# Cambiá la línea 11 por esta:
+RUN yarn install --ignore-engines
 
 # 5. Copiamos el resto del código
 COPY . .
