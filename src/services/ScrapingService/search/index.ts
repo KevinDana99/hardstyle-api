@@ -52,7 +52,7 @@ const searchService = async (query: string, config?: QueryConfigType) => {
     await browser.close();
     return results;
   } catch (err) {
-    throw Error("No salio bien la conexion con playwrite");
+    throw Error(err);
   }
 };
 
