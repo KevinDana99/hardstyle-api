@@ -7,7 +7,19 @@ const searchService = async (query: string, config?: QueryConfigType) => {
   try {
     const results: ResultsListType = [];
     const limit = config?.limit ?? LIMIT_RESULTS;
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({
+      headless: true,
+      args: [
+        "--no-sandbox", // Obligatorio en Linux/Docker
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage", // Usa /tmp en vez de /dev/shm (evita crashes por RAM)
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process", // Crucial para ahorrar RAM en planes gratis
+        "--disable-gpu",
+      ],
+    });
     const page = await browser.newPage();
     await page.goto(`https://hardstyle.com/en/search?search=${query}`);
     const tracks = await page.locator(".itemWrapper .track.listView").all();
