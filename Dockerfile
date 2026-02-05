@@ -1,5 +1,5 @@
 # 1. Usamos la imagen que ya tiene TODO lo de Playwright
-FROM mcr.microsoft.com/playwright:v1.41.0-jammy
+FROM mcr.microsoft.com/playwright:v1.57.0-jammy
 
 # 2. Carpeta de trabajo
 WORKDIR /app
