@@ -1,6 +1,8 @@
 # 1. Usamos la imagen que ya tiene TODO lo de Playwright
 FROM mcr.microsoft.com/playwright:v1.57.0-jammy
 
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 # 2. Carpeta de trabajo
 WORKDIR /app
 
