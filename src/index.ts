@@ -19,7 +19,7 @@ server.get("/api/music/search", async (req: Request, res: Response) => {
     const searchResults = await MusicService.search(query);
     return res.json(searchResults);
   } catch (err) {
-    return res.json({ err });
+    return res.json({ message: err.message, statusCode: err.statusCode });
   }
 });
 server.get("/api/music/download", async (req: Request, res: Response) => {
