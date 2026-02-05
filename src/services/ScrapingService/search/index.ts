@@ -21,7 +21,12 @@ const searchService = async (query: string, config?: QueryConfigType) => {
       ],
     });
     const page = await browser.newPage();
-    await page.goto(`https://hardstyle.com/en/search?search=${query}`);
+    await page.route("**/*.{png,jpg,jpeg,gif,svg,css}", (route) =>
+      route.abort(),
+    );
+    await page.goto(`https://hardstyle.com/en/search?search=${query}`, {
+      waitUntil: "domcontentloaded",
+    });
     const tracks = await page.locator(".itemWrapper .track.listView").all();
     console.log({ tracks });
     for (const track of tracks) {
