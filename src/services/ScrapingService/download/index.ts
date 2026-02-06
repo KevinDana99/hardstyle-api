@@ -1,10 +1,8 @@
 import yts, { type OptionsWithSearch } from "yt-search";
 import config from "../../../config/index.js";
 import type { DonwloadYtRequest } from "./types.js";
-import { config as configDotenv } from "dotenv";
 
 export const downloadService = async (artist: string, title: string) => {
-  configDotenv();
   try {
     const search = await yts(`${title} ${artist} Hardstyle`);
     const video = search.videos[0];
