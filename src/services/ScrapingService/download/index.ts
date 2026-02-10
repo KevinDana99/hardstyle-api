@@ -21,34 +21,20 @@ export const downloadService = async (artist: string, title: string) => {
     );
 
     const data = (await response.json()) as any;
-
     console.log(`🎬 Video encontrado: ${video.title}`);
     console.log({ video });
 
-    const audioFormat = data.adaptiveFormats?.find(
+    const audioFormat = await data.adaptiveFormats?.find(
       (f: any) => f.itag === 140 || f.itag === 251,
     );
-    console.log({ audioFormat });
+    console.log({ audioFormat, data });
     if (audioFormat && audioFormat.url) {
       console.log("✅ Link directo de audio extraído con éxito");
-
-      const audioRes = await fetch(audioFormat.url, {
-        headers: {
-          redirect: "follow",
-          "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36`,
-          Accept: "*/*",
-          "Accept-Encoding": "identity;q=1, *;q=0",
-          Referer: "https://www.youtube.com/",
-          Origin: "https://www.youtube.com/",
-          Connection: "keep-alive",
-        },
-      });
-      const size = audioRes.headers.get("Content-Length");
-
+      const size = audioFormat.contentLength;
+      console.log({ size });
       return {
-        audio_track: audioRes.body,
-        meta_data: video,
-        size: size,
+        audio_track: audioFormat.url,
+        meta_data: { ...video, size },
       };
     } else {
       console.error(

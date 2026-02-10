@@ -8,16 +8,12 @@ export type StreamType = {
 };
 
 const setHeaders = (res: Response, stream: StreamType) => {
-  res.setHeader("Content-Type", "audio/mpeg");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.writeHead(200, {
     "Duration-Track": stream.meta_data.duration.seconds,
     "Content-Length": stream.size?.toString(),
-    "Content-Type": "audio/mpeg",
-    "Accept-Ranges": "bytes",
-    "Access-Control-Allow-Origin": "*",
   });
 };
 

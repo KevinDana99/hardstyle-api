@@ -35,18 +35,7 @@ server.get("/api/music/download", async (req: Request, res: Response) => {
       console.error("❌ No se pudo obtener el stream de downloadService");
       return res.status(404).send("No se pudo obtener el audio");
     }
-
-    setHeaders(res, stream);
-    const nodeStream = Readable.fromWeb(stream.audio_track as any);
-
-    nodeStream.on("data", (chunk) => {
-      console.log(`✅ Recibiendo datos: ${chunk.length} bytes`);
-    });
-
-    nodeStream.on("end", () => {
-      console.log("🏁 El stream de origen terminó");
-    });
-    nodeStream.pipe(res);
+    return res.status(200).json(stream);
   } catch (globalError) {
     console.error("❌ Error crítico en el endpoint:", globalError);
     if (!res.headersSent) {
